@@ -10,15 +10,7 @@ import com.richard.tracker.api.OnCommitListener
 import com.richard.tracker.constant.GlobalConfig
 import com.richard.tracker.manager.TrackerManager
 
-/**
- ***************************************
- * 项目名称:DataTracker
- * @Author richard
- * 邮箱：985507966@qq.com
- * 创建时间: 6/17/21     10:08 AM
- * 用途:
- ***************************************
- */
+
 class App: MultiDexApplication() {
 
     override fun onCreate() {

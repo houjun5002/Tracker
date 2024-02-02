@@ -18,15 +18,7 @@ import com.richard.tracker.util.CommonHelper
 import com.richard.tracker.util.TrackerLog
 import java.util.*
 
-/**
- ***************************************
- * 项目名称:DataTracker
- * @Author richard
- * 邮箱：985507966@qq.com
- * 创建时间: 6/17/21     9:21 AM
- * 用途:
- ***************************************
- */
+
 class TrackerFrameLayout @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : FrameLayout(context, attrs, defStyleAttr), GestureDetector.OnGestureListener {

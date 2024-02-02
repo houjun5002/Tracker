@@ -2,15 +2,6 @@ package com.richard.tracker.model
 
 import java.util.*
 
-/**
- ***************************************
- * 项目名称:DataTracker
- * @Author richard
- * 邮箱：985507966@qq.com
- * 创建时间: 6/16/21     4:38 PM
- * 用途:
- ***************************************
- */
 class CommitLog {
     var pageName: String? = null
 
