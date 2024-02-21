@@ -1,22 +1,18 @@
-package com.richard.tracker.ui
+package com.zsmarter.exposuretracker.ui
 
 import android.app.Activity
 import android.content.Context
 import android.util.ArrayMap
 import android.util.AttributeSet
-import android.util.Log
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.View
 import android.widget.FrameLayout
-import com.richard.tracker.constant.TrackerConstants
-import com.richard.tracker.manager.ClickManager
-import com.richard.tracker.manager.ExposureManager
-import com.richard.tracker.model.ExposureModel
-import com.richard.tracker.model.ReuseLayoutHook
-import com.richard.tracker.util.CommonHelper
-import com.richard.tracker.util.TrackerLog
-import java.util.*
+import com.zsmarter.exposuretracker.constant.TrackerConstants
+import com.zsmarter.exposuretracker.manager.ExposureManager
+import com.zsmarter.exposuretracker.model.ExposureModel
+import com.zsmarter.exposuretracker.model.ReuseLayoutHook
+import com.zsmarter.exposuretracker.util.TrackerLog
 
 
 class TrackerFrameLayout @JvmOverloads constructor(
@@ -65,7 +61,7 @@ class TrackerFrameLayout @JvmOverloads constructor(
         mGestureDetector.onTouchEvent(ev)
         if (context != null && context is Activity) {
             // trigger the click event
-            ClickManager.get().eventAspect(context as Activity, ev)
+            //ClickManager.get().eventAspect(context as Activity, ev)
         }
         when (ev.action) {
             MotionEvent.ACTION_DOWN -> {
@@ -114,7 +110,6 @@ class TrackerFrameLayout @JvmOverloads constructor(
         bottom: Int
     ) {
         TrackerLog.v("onLayout traverseViewTree begin")
-        Log.e("TestTag", " onLayout===========")
         // duplicate message in 1s
         val time = System.currentTimeMillis()
         if (time - lastOnLayoutSystemTimeMillis > 1000) {

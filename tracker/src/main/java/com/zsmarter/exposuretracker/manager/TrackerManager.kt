@@ -1,4 +1,4 @@
-package com.richard.tracker.manager
+package com.zsmarter.exposuretracker.manager
 
 import android.R
 import android.app.Activity
@@ -10,12 +10,12 @@ import android.os.Handler
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
-import com.richard.tracker.api.IDataCommit
-import com.richard.tracker.api.OnCommitListener
-import com.richard.tracker.api.impl.DataCommitImpl
-import com.richard.tracker.constant.GlobalConfig
-import com.richard.tracker.ui.TrackerFrameLayout
-import com.richard.tracker.util.TrackerLog
+import com.zsmarter.exposuretracker.api.IDataCommit
+import com.zsmarter.exposuretracker.api.OnCommitListener
+import com.zsmarter.exposuretracker.api.impl.DataCommitImpl
+import com.zsmarter.exposuretracker.constant.GlobalConfig
+import com.zsmarter.exposuretracker.ui.TrackerFrameLayout
+import com.zsmarter.exposuretracker.util.TrackerLog
 
 /**
  ***************************************
@@ -101,9 +101,7 @@ class TrackerManager {
         // exist android.R.id.content not found crash
         try {
             val container = activity.findViewById<View>(R.id.content) as ViewGroup
-            Log.i("TestTag", " (container.childCount > 0)=="+ (container.childCount > 0) )
             if (container.childCount > 0) {
-                Log.i("TestTag", " (container.childCount > 0)=in (container.childCount > 0)")
                 val root = container.getChildAt(0)
                 if (root is TrackerFrameLayout) {
                     TrackerLog.d("has added attachTrackerFrameLayout $activity")
@@ -188,7 +186,7 @@ class TrackerManager {
                 return field
             }
         @Synchronized
-        fun get(): TrackerManager{
+        fun get(): TrackerManager {
             return instance!!
         }
     }

@@ -1,12 +1,8 @@
-package com.richard.tracker.util
+package com.zsmarter.exposuretracker.util
 
-import android.text.TextUtils
-import android.view.View
-import com.richard.tracker.api.IDataCommit
-import com.richard.tracker.constant.GlobalConfig
-import com.richard.tracker.constant.TrackerConstants
-import com.richard.tracker.manager.TrackerManager
-import java.util.*
+import com.zsmarter.exposuretracker.api.IDataCommit
+import com.zsmarter.exposuretracker.constant.GlobalConfig
+import com.zsmarter.exposuretracker.manager.TrackerManager
 
 object DataProcess {
 

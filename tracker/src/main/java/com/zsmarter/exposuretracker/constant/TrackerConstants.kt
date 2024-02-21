@@ -1,4 +1,4 @@
-package com.richard.tracker.constant
+package com.zsmarter.exposuretracker.constant
 
 
 object TrackerConstants {

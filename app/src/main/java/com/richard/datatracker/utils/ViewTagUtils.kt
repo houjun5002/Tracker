@@ -1,7 +1,7 @@
 package com.richard.datatracker.utils
 
 import android.view.View
-import com.richard.tracker.constant.TrackerConstants
+import com.zsmarter.exposuretracker.constant.TrackerConstants
 
 /**
  ***************************************

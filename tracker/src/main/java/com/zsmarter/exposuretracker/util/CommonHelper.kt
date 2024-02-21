@@ -1,10 +1,7 @@
-package com.richard.tracker.util
+package com.zsmarter.exposuretracker.util
 
-import android.app.Activity
 import android.view.View
-import com.richard.tracker.constant.TrackerConstants
-import com.richard.tracker.manager.TrackerManager
-import com.richard.tracker.ui.TrackerFrameLayout
+import com.zsmarter.exposuretracker.constant.TrackerConstants
 import java.util.*
 
 

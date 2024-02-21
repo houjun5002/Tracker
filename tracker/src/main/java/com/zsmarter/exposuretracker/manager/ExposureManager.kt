@@ -1,4 +1,4 @@
-package com.richard.tracker.manager
+package com.zsmarter.exposuretracker.manager
 
 import android.graphics.Rect
 import android.os.Handler
@@ -7,15 +7,14 @@ import android.util.ArrayMap
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
-import com.richard.tracker.constant.GlobalConfig
-import com.richard.tracker.constant.TrackerConstants
-import com.richard.tracker.model.CommitLog
-import com.richard.tracker.model.ExposureModel
-import com.richard.tracker.model.ReuseLayoutHook
-import com.richard.tracker.util.CommonHelper
-import com.richard.tracker.util.DataProcess
-import com.richard.tracker.util.TrackerLog
-import com.richard.tracker.util.TrackerUtil
+import com.zsmarter.exposuretracker.constant.GlobalConfig
+import com.zsmarter.exposuretracker.constant.TrackerConstants
+import com.zsmarter.exposuretracker.model.ExposureModel
+import com.zsmarter.exposuretracker.model.ReuseLayoutHook
+import com.zsmarter.exposuretracker.util.CommonHelper
+import com.zsmarter.exposuretracker.util.DataProcess
+import com.zsmarter.exposuretracker.util.TrackerLog
+import com.zsmarter.exposuretracker.util.TrackerUtil
 import java.lang.IllegalArgumentException
 import java.util.*
 
@@ -42,8 +41,7 @@ class ExposureManager {
             Handler(exposureThread.looper, Handler.Callback { msg ->
                 when (msg.what) {
                     SINGLE_COMMIT_EXPOSURE -> {
-                        Log.i("TestTag", "SINGLE_COMMIT_EXPOSURE==")
-                        val exposureInner: ExposureManager.ExposureInner = msg.obj as ExposureManager.ExposureInner
+                        val exposureInner: ExposureInner = msg.obj as ExposureInner
                         when (exposureInner.triggerType) {////controlName viewTag
                             TrackerConstants.TRIGGER_WINDOW_CHANGED -> for (controlName in exposureInner.lastVisibleViewMap.keys) {
                                 // If the current window invokes change, all the visible views need to be committed.
@@ -67,13 +65,9 @@ class ExposureManager {
                         }
                     }
                     BATCH_COMMIT_EXPOSURE -> {
-                        Log.i("TestTag", "BATCH_COMMIT_EXPOSURE==")
-
                         // Scene 3 (switch back and forth when press Home button) is excluded.
                         TrackerUtil.trackExploreData(commitLogs)
-
                         TrackerLog.v("onActivityPaused batch commit")
-
                         // clear after committed.
                         commitLogs.clear()
                     }
@@ -308,7 +302,7 @@ class ExposureManager {
                 return field
             }
         @Synchronized
-        fun get(): ExposureManager{
+        fun get(): ExposureManager {
             return instance!!
         }
 

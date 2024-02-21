@@ -1,13 +1,13 @@
-package com.richard.tracker.model
+package com.zsmarter.exposuretracker.model
 
 import android.util.Log
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager.widget.ViewPager
-import com.richard.tracker.constant.TrackerConstants
-import com.richard.tracker.manager.ExposureManager
-import com.richard.tracker.ui.TrackerFrameLayout
-import com.richard.tracker.util.TrackerLog
+import com.zsmarter.exposuretracker.constant.TrackerConstants
+import com.zsmarter.exposuretracker.manager.ExposureManager
+import com.zsmarter.exposuretracker.ui.TrackerFrameLayout
+import com.zsmarter.exposuretracker.util.TrackerLog
 import java.util.*
 
 
@@ -37,7 +37,7 @@ class ReuseLayoutHook(
     }
 
 
-    private inner class RecyclerViewHook: ViewHookListener{
+    private inner class RecyclerViewHook: ViewHookListener {
 
         override fun isValid(view: View?): Boolean {
             return view is RecyclerView
@@ -91,7 +91,6 @@ class ReuseLayoutHook(
 
         override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
             if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                Log.e("TestTag", " onScrollStateChanged===========")
                 ExposureManager.get().triggerViewCalculate(TrackerConstants.TRIGGER_VIEW_CHANGED, mRootLayout, mRootLayout.getLastVisibleViewMap());
             }
         }

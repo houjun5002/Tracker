@@ -1,13 +1,12 @@
-package com.richard.tracker.util
+package com.zsmarter.exposuretracker.util
 
-import com.richard.tracker.manager.TrackerManager
-import java.lang.IllegalArgumentException
+import com.zsmarter.exposuretracker.manager.TrackerManager
 
 
 object TrackerUtil {
 
     fun trackClickData(clickData: MutableMap<String, Any?>?) {
-        TrackerLog.d("点击数据："+ clickData.toString())
+        TrackerLog.d("点击数据：" + clickData.toString())
         TrackerManager.get().commitListener?.commitClickData(clickData)
     }
 

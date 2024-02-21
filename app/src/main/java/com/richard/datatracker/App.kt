@@ -1,14 +1,11 @@
 package com.richard.datatracker
 
-import android.app.Application
 import android.util.Log
 import androidx.multidex.MultiDexApplication
 import com.alibaba.fastjson.JSON
-import com.alibaba.fastjson.JSONObject
 import com.facebook.drawee.backends.pipeline.Fresco
-import com.richard.tracker.api.OnCommitListener
-import com.richard.tracker.constant.GlobalConfig
-import com.richard.tracker.manager.TrackerManager
+import com.zsmarter.exposuretracker.api.OnCommitListener
+import com.zsmarter.exposuretracker.manager.TrackerManager
 
 
 class App: MultiDexApplication() {

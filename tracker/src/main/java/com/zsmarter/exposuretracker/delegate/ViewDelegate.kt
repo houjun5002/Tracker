@@ -1,11 +1,10 @@
-package com.richard.tracker.delegate
+package com.zsmarter.exposuretracker.delegate
 
 import android.view.View
 import android.view.accessibility.AccessibilityEvent
-import com.richard.tracker.constant.TrackerConstants
-import com.richard.tracker.util.DataProcess
-import com.richard.tracker.util.TrackerLog
-import java.util.*
+import com.zsmarter.exposuretracker.constant.TrackerConstants
+import com.zsmarter.exposuretracker.util.DataProcess
+import com.zsmarter.exposuretracker.util.TrackerLog
 
 
 class ViewDelegate: View.AccessibilityDelegate() {

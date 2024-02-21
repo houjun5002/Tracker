@@ -1,7 +1,7 @@
-package com.richard.tracker.util
+package com.zsmarter.exposuretracker.util
 
 import android.util.Log
-import com.richard.tracker.constant.GlobalConfig
+import com.zsmarter.exposuretracker.constant.GlobalConfig
 
 
 object TrackerLog {

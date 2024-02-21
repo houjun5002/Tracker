@@ -1,10 +1,10 @@
-package com.richard.tracker.api.impl
+package com.zsmarter.exposuretracker.api.impl
 
-import com.richard.tracker.api.IDataCommit
-import com.richard.tracker.constant.GlobalConfig
-import com.richard.tracker.manager.ExposureManager
-import com.richard.tracker.util.TrackerLog
-import com.richard.tracker.util.TrackerUtil
+import com.zsmarter.exposuretracker.api.IDataCommit
+import com.zsmarter.exposuretracker.constant.GlobalConfig
+import com.zsmarter.exposuretracker.manager.ExposureManager
+import com.zsmarter.exposuretracker.util.TrackerLog
+import com.zsmarter.exposuretracker.util.TrackerUtil
 
 
 class DataCommitImpl: IDataCommit {

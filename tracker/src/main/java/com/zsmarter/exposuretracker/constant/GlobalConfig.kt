@@ -1,7 +1,6 @@
-package com.richard.tracker.constant
+package com.zsmarter.exposuretracker.constant
 
 import android.app.Application
-import java.util.*
 
 
 object GlobalConfig {
@@ -10,7 +9,7 @@ object GlobalConfig {
     /**
      * whether or not to track click event
      */
-    var trackerOpen = true
+    var trackerOpen = false
 
     /**
      * whether or not to track exposure event

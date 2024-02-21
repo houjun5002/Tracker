@@ -1,6 +1,6 @@
-package com.richard.tracker.model
+package com.zsmarter.exposuretracker.model
 
-import com.richard.tracker.util.TrackerLog
+import com.zsmarter.exposuretracker.util.TrackerLog
 import java.util.*
 
 

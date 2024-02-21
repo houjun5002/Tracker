@@ -1,6 +1,4 @@
-package com.richard.tracker.model
-
-import java.util.*
+package com.zsmarter.exposuretracker.model
 
 class CommitLog {
     var pageName: String? = null
