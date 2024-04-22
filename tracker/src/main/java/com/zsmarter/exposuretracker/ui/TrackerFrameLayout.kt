@@ -67,21 +67,23 @@ class TrackerFrameLayout @JvmOverloads constructor(
             MotionEvent.ACTION_DOWN -> {
                 mOriX = ev.x
                 mOriY = ev.y
+                ExposureManager.get().setAbsPosition(ev)
             }
             MotionEvent.ACTION_MOVE -> if (Math.abs(ev.x - mOriX) > CLICK_LIMIT || Math.abs(
                     ev.y - mOriY
                 ) > CLICK_LIMIT
             ) {
                 // Scene 1: Scroll beginning
+                ExposureManager.get().setAbsPosition(ev)
                 val time = System.currentTimeMillis()
                 ExposureManager.get().triggerViewCalculate(
                     TrackerConstants.TRIGGER_VIEW_CHANGED,
                     this,
                     lastVisibleViewMap
                 )
-                TrackerLog.v("dispatchTouchEvent triggerViewCalculate end costTime=" + (System.currentTimeMillis() - time))
+                //TrackerLog.v("dispatchTouchEvent triggerViewCalculate =")
             } else {
-                TrackerLog.d("dispatchTouchEvent ACTION_MOVE but not in click limit")
+                //TrackerLog.d("dispatchTouchEvent ACTION_MOVE but not in click limit")
             }
             MotionEvent.ACTION_UP -> {
             }
@@ -109,7 +111,6 @@ class TrackerFrameLayout @JvmOverloads constructor(
         right: Int,
         bottom: Int
     ) {
-        TrackerLog.v("onLayout traverseViewTree begin")
         // duplicate message in 1s
         val time = System.currentTimeMillis()
         if (time - lastOnLayoutSystemTimeMillis > 1000) {
@@ -118,12 +119,14 @@ class TrackerFrameLayout @JvmOverloads constructor(
             ExposureManager.get().traverseViewTree(this, mReuseLayoutHook)
         }
         //ExposureManager.getInstance().triggerViewCalculate(TrackerInternalConstants.TRIGGER_VIEW_CHANGED, this, commonInfo, lastVisibleViewMap);
-        TrackerLog.v("onLayout traverseViewTree end costTime=" + (System.currentTimeMillis() - time))
         super.onLayout(changed, left, top, right, bottom)
     }
 
     override fun onDown(motionEvent: MotionEvent?): Boolean {
         TrackerLog.v("onDown")
+        if (motionEvent != null) {
+            ExposureManager.get().setAbsPosition(motionEvent)
+        }
         return false
     }
 
@@ -133,6 +136,7 @@ class TrackerFrameLayout @JvmOverloads constructor(
 
     override fun onSingleTapUp(motionEvent: MotionEvent?): Boolean {
         TrackerLog.v("onSingleTapUp")
+        // 用户轻击屏幕后抬起统计触发
         return false
     }
 
@@ -186,31 +190,30 @@ class TrackerFrameLayout @JvmOverloads constructor(
      * @param hasFocus
      */
     override fun dispatchWindowFocusChanged(hasFocus: Boolean) {
-        TrackerLog.v("dispatchWindowFocusChanged triggerViewCalculate begin==" + context.javaClass.name)
+        TrackerLog.e("TrackerFrameLayout dispatchWindowFocusChanged triggerViewCalculate begin==")
         val ts = System.currentTimeMillis()
         ExposureManager.get().triggerViewCalculate(
             TrackerConstants.TRIGGER_WINDOW_CHANGED,
             this,
             lastVisibleViewMap
         )
-        TrackerLog.v("dispatchWindowFocusChanged triggerViewCalculate end costTime=" + (System.currentTimeMillis() - ts))
         super.dispatchWindowFocusChanged(hasFocus)
     }
 
 
     override fun dispatchVisibilityChanged(changedView: View, visibility: Int) {
         // Scene 6: switch page in the TabActivity
+        TrackerLog.e("TrackerFrameLayout dispatchVisibilityChanged triggerViewCalculate begin")
         if (visibility == View.GONE) {
-            TrackerLog.v("dispatchVisibilityChanged triggerViewCalculate begin")
             val ts = System.currentTimeMillis()
             ExposureManager.get().triggerViewCalculate(
                 TrackerConstants.TRIGGER_WINDOW_CHANGED,
                 this,
                 lastVisibleViewMap
             )
-            TrackerLog.v("dispatchVisibilityChanged triggerViewCalculate end costTime=" + (System.currentTimeMillis() - ts))
+            TrackerLog.e("dispatchVisibilityChanged triggerViewCalculate end costTime=")
         } else {
-            TrackerLog.v("trigger dispatchVisibilityChanged, visibility =$visibility")
+            TrackerLog.e("trigger dispatchVisibilityChanged, visibility =$visibility")
         }
         super.dispatchVisibilityChanged(changedView!!, visibility)
     }

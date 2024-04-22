@@ -4,9 +4,10 @@ import android.graphics.Rect
 import android.os.Handler
 import android.os.HandlerThread
 import android.util.ArrayMap
-import android.util.Log
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewTreeObserver
 import com.zsmarter.exposuretracker.constant.GlobalConfig
 import com.zsmarter.exposuretracker.constant.TrackerConstants
 import com.zsmarter.exposuretracker.model.ExposureModel
@@ -17,6 +18,7 @@ import com.zsmarter.exposuretracker.util.TrackerLog
 import com.zsmarter.exposuretracker.util.TrackerUtil
 import java.lang.IllegalArgumentException
 import java.util.*
+import kotlin.collections.ArrayList
 
 
 class ExposureManager {
@@ -31,7 +33,9 @@ class ExposureManager {
     private lateinit var exposureHandler: Handler
 
     var commitLogs: MutableList<MutableMap<String, Any?>?> = mutableListOf()/// 最终数组
-
+    private var isVisible = false
+    private var exposureViewProportion: Float? = null
+    var motionEvent: MotionEvent? = null
 
     init {
         val exposureThread = HandlerThread("ViewTracker_exposure")
@@ -88,8 +92,8 @@ class ExposureManager {
         viewTag: String
     ) {
         val duration: Long = getExposureViewDuration(model)
+        TrackerLog.e("ExposureView report ${model.tag} exposure data $duration")
         if (duration > 0) {
-            TrackerLog.v("ExposureView report $model exposure data $duration")
             val indexMap =
                 HashMap<String, Any>()
             if (!GlobalConfig.exposureIndex.containsKey(viewTag)) {
@@ -101,6 +105,9 @@ class ExposureManager {
                 GlobalConfig.exposureIndex[viewTag] = index + 1
                 indexMap["exposureIndex"] = index + 1
             }
+            addParamsToHashMap(model,model.params,duration)
+            model.params?.put("startTime",model.tag)
+            model.params?.put("durationTime",duration)
             DataProcess.commitExposureParams(
                 model.params,
                 duration
@@ -108,6 +115,18 @@ class ExposureManager {
         } else {
             TrackerLog.d("曝光时间不足${GlobalConfig.timeThreshold}毫秒==${viewTag}")
         }
+    }
+
+    fun setAbsPosition(ev: MotionEvent) {
+        motionEvent = ev
+    }
+
+    fun getAbsPosition(): Map<String, Float>? {
+        val positionMap = mutableMapOf<String, Float>()
+        positionMap["x"] = motionEvent?.x ?: 0f
+        positionMap["y"] = motionEvent?.y ?: 0f
+        TrackerLog.d("getAbsPosition()====${positionMap}")
+        return positionMap
     }
 
     /**
@@ -124,12 +143,7 @@ class ExposureManager {
         if (!GlobalConfig.trackerExposureOpen) {
             return
         }
-        val triggerTime = System.currentTimeMillis()
-//        if (triggerTime - traverseTime < 100) {
-//            TrackerLog.d("triggerTime interval is too close to 100ms")
-//            return
-//        }
-//        traverseTime = triggerTime
+        TrackerLog.d("GlobalConfig.trackerExposureOpen=="+GlobalConfig.trackerExposureOpen)
         if (view == null) {
             TrackerLog.d("view is null")
             return
@@ -141,11 +155,10 @@ class ExposureManager {
             TrackerLog.d("exposure isSampleHit is false")
             return
         }
-        val currentVisibleViewMap: MutableMap<String, ExposureModel?> =
-            ArrayMap()
+        val currentVisibleViewMap: MutableMap<String, ExposureModel?> = ArrayMap()
+        //TrackerLog.d("triggerViewCalculate  lastVisibleViewMap=="+GsonUtils.toJson(lastVisibleViewMap))
         traverseViewTree(view, lastVisibleViewMap, currentVisibleViewMap)  ///遍历view
         commitExposure(triggerType, lastVisibleViewMap, currentVisibleViewMap) ///提交view
-        TrackerLog.d("triggerViewCalculate")
     }
 
     fun traverseViewTree(view: View?, reuseLayoutHook: ReuseLayoutHook?) {
@@ -175,7 +188,6 @@ class ExposureManager {
         currentVisibleViewMap: MutableMap<String, ExposureModel?>
     ) {
         if (CommonHelper.isViewHasExposureTag(view)) {//判断是否有tag
-            TrackerLog.d("TestTag traverseViewTree isViewHasExposureTag")
             wrapExposureCurrentView(view, lastVisibleViewMap, currentVisibleViewMap)
         }
         if (view is ViewGroup) {
@@ -197,12 +209,12 @@ class ExposureManager {
         if (params == null) {
             params = view.getTag(TrackerConstants.TAG_EXPLORE_AND_CLICK_DATA) as MutableMap<String, Any?>?
         }
-
         val viewTag = view.getTag(TrackerConstants.VIEW_TAG_UNIQUE_NAME) as String?
+        val checkWindowFocus = checkWindowFocus(view)  //检查视图是否拥有焦点,同时检查isShow
 
-        val isWindowChange = view.hasWindowFocus()  //是否焦点
         val exposureValid = checkExposureViewDimension(view) //是否可见getGlobalVisibleRect
-        val needExposureProcess = isWindowChange && exposureValid
+        TrackerLog.d(view.toString()+"是否可见===$checkWindowFocus======exposureValid=是否有效可见===$exposureValid")
+        val needExposureProcess = checkWindowFocus && exposureValid
         if (!needExposureProcess) {
             return
         }
@@ -210,9 +222,8 @@ class ExposureManager {
         if (viewTag.isNullOrBlank()) {
             throw IllegalArgumentException("没有有给曝光的view设置->VIEW_TAG_UNIQUE_NAME")
         }
+        exposureViewProportion = getExposureViewProportion(view)
         ///需要曝光
-
-
         // only add the visible view in screen
         if (lastVisibleViewMap.containsKey(viewTag)) {
             val model = lastVisibleViewMap[viewTag]
@@ -224,6 +235,22 @@ class ExposureManager {
             model.tag = viewTag
             model.params = params
             currentVisibleViewMap[viewTag] = model
+        }
+    }
+
+    private fun addParamsToHashMap(
+        model: ExposureModel?,
+        params: MutableMap<String, Any?>?,
+        duration: Long
+    ) {
+        params?.values?.forEach { value ->
+            (value as? ArrayList<HashMap<String, Any?>>)?.forEachIndexed  {index,item ->
+                item.apply {
+                    this["beginTime"] = model?.beginTime
+                    this["exposeProportion"] = exposureViewProportion
+                    this["duration"] = duration
+                }
+            }
         }
     }
 
@@ -245,7 +272,7 @@ class ExposureManager {
         }
         lastVisibleViewMap.clear()
         lastVisibleViewMap.putAll(currentVisibleViewMap)
-        TrackerLog.d("TestTag commitExposure commitExposure")
+        ///TrackerLog.d("commitExposure commitExposure+==========="+ (exposureInner.lastVisibleViewMap.isNotEmpty() || exposureInner.currentVisibleViewMap.isNotEmpty()))
         // transfer time-consuming operation to new thread.
         if (exposureInner.lastVisibleViewMap.isNotEmpty() || exposureInner.currentVisibleViewMap.isNotEmpty()) {
             val message = exposureHandler.obtainMessage()
@@ -255,6 +282,19 @@ class ExposureManager {
         }
     }
 
+    private fun checkWindowFocus(view: View): Boolean {
+        if(!view.isShown)return false
+        view.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
+            override fun onGlobalLayout() {
+                val visibleRect = Rect()
+                // 检查视图的可见性并更新 isVisible 变量
+                isVisible = view.getGlobalVisibleRect(visibleRect)
+                // 移除监听器，避免重复调用
+                view.viewTreeObserver.removeOnGlobalLayoutListener(this)
+            }
+        })
+        return isVisible
+    }
     /**
      * check the visible width and height of the view, compared with the its original width and height.
      *
@@ -288,6 +328,28 @@ class ExposureManager {
         }
         return 0
     }
+
+    private fun getExposureViewProportion(view: View): Float {
+        val width = view.width.toFloat()
+        val height = view.height.toFloat()
+        val globalVisibleRect = Rect()
+        val visibleArea: Float
+        // 获取控件在屏幕上的可见区域
+        val isVisible = view.getGlobalVisibleRect(globalVisibleRect)
+        if (isVisible) {
+            // 计算可见区域的面积
+            val visibleWidth = globalVisibleRect.right - globalVisibleRect.left
+            val visibleHeight = globalVisibleRect.bottom - globalVisibleRect.top
+            visibleArea = visibleWidth.toFloat() * visibleHeight.toFloat()
+        } else {
+            // 如果控件不可见，则可见区域为0
+            visibleArea = 0f
+        }
+        // 计算曝光比例
+        val exposeProportion = visibleArea / (width * height)
+        return exposeProportion
+    }
+
 
 
     companion object {

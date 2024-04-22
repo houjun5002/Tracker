@@ -14,7 +14,7 @@ class DataCommitImpl: IDataCommit {
     }
 
     override fun commitExposureEvent(exposureData: MutableMap<String, Any?>?, exposureTime: Long) {
-        TrackerLog.d("曝光时间==$exposureTime===" + "曝光数据："+ exposureData.toString())
+        TrackerLog.d("曝光时间==$exposureTime===" + "曝光数据："+ exposureData?.get("page_code"))
         if (GlobalConfig.batchOpen) {
             ExposureManager.get().commitLogs.add(exposureData)
         } else {

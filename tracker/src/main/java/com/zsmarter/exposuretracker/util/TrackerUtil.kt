@@ -11,7 +11,7 @@ object TrackerUtil {
     }
 
     fun trackExploreData(exposureData: MutableList<MutableMap<String, Any?>?>) {
-        TrackerLog.d("曝光数据：$exposureData")
+        //TrackerLog.d("曝光数据：$exposureData")
         if (exposureData.isNotEmpty()) {
             TrackerManager.get().commitListener?.commitExposureData(exposureData)
         }

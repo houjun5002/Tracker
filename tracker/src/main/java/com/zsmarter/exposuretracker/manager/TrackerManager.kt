@@ -7,7 +7,6 @@ import android.app.Application.ActivityLifecycleCallbacks
 import android.app.TabActivity
 import android.os.Bundle
 import android.os.Handler
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import com.zsmarter.exposuretracker.api.IDataCommit
@@ -20,10 +19,7 @@ import com.zsmarter.exposuretracker.util.TrackerLog
 /**
  ***************************************
  * 项目名称:DataTracker
- * @Author richard
- * 邮箱：985507966@qq.com
- * 创建时间: 6/16/21     3:21 PM
- * 用途:
+ *
  ***************************************
  */
 class TrackerManager {
@@ -35,13 +31,13 @@ class TrackerManager {
     private var trackerCommit: IDataCommit? = null
 
     var commitListener: OnCommitListener? = null
-
+    var containerView: View? = null
     fun initTracker(
         application: Application,
         trackerOpen: Boolean,
         trackerExposureOpen: Boolean,
         batchOpen: Boolean,
-        logOpen: Boolean,
+        logOpen: Boolean,dimThreshold:Double,timeThreshold:Int,
         onCommitListener: OnCommitListener
     ) {
         GlobalConfig.mApplication = application
@@ -49,6 +45,8 @@ class TrackerManager {
         GlobalConfig.trackerExposureOpen = trackerExposureOpen
         GlobalConfig.logOpen = logOpen
         GlobalConfig.batchOpen = batchOpen
+        GlobalConfig.dimThreshold =dimThreshold
+        GlobalConfig.timeThreshold=timeThreshold
 
         this.commitListener = onCommitListener
 
@@ -174,6 +172,69 @@ class TrackerManager {
     }
 
 
+    fun attachTrackerFrameLayout(view: View?) {
+        // this is a problem: several activity exist in the TabActivity
+        if (view == null) {
+            return
+        }
+        // exist android.R.id.content not found crash
+        try {
+            containerView = view
+            val container = view.findViewById<View>(R.id.content) as ViewGroup
+            if (container.childCount > 0) {
+                val root = container.getChildAt(0)
+                if (root is TrackerFrameLayout) {
+                    TrackerLog.d("has added attachTrackerFrameLayout $view")
+                } else {
+                    val trackerFrameLayout = TrackerFrameLayout(view.context)
+                    while (container.childCount > 0) {
+                        val view = container.getChildAt(0)
+                        container.removeViewAt(0)
+                        trackerFrameLayout.addView(view, view.layoutParams)
+                    }
+                    container.addView(
+                        trackerFrameLayout,
+                        ViewGroup.LayoutParams(
+                            ViewGroup.LayoutParams.MATCH_PARENT,
+                            ViewGroup.LayoutParams.MATCH_PARENT
+                        )
+                    )
+                }
+            }
+        } catch (e: Exception) {
+            TrackerLog.e(e.toString())
+        }
+    }
+
+    public fun detachTrackerFrameLayout(view: View?) {
+        if (view == null) {
+            return
+        }
+        try {
+            val container = view.findViewById<View>(R.id.content) as ViewGroup
+                ?: return
+            if (container.getChildAt(0) is TrackerFrameLayout) {
+                container.dispatchWindowFocusChanged(false)
+            }
+        } catch (e: Exception) {
+            TrackerLog.e(e.toString())
+        }
+    }
+
+    /**
+     * 页面暂停或切换tab按键的时候调用触发结束计算时间
+     */
+    public fun onActivityStoped() {
+        if (GlobalConfig.trackerExposureOpen) {
+            detachTrackerFrameLayout(containerView)
+            TrackerLog.d("onActivityStopped activity")
+            if (GlobalConfig.batchOpen) {
+                batchReport()
+            }
+            //containerView = null
+        }
+    }
+
     companion object {
         /**
          * 单例
@@ -185,6 +246,7 @@ class TrackerManager {
                 }
                 return field
             }
+
         @Synchronized
         fun get(): TrackerManager {
             return instance!!
@@ -192,10 +254,12 @@ class TrackerManager {
     }
 
     private inner class ActivityLifecycleForTracker : ActivityLifecycleCallbacks {
-        override fun onActivityCreated(activity: Activity, bundle: Bundle?) {}
+        override fun onActivityCreated(activity: Activity, bundle: Bundle?) {
+        }
+
         override fun onActivityStarted(activity: Activity) {}
         override fun onActivityResumed(activity: Activity) {
-            TrackerLog.d("onActivityResumed activity $activity")
+            TrackerLog.d("onActivityResumed activity ${activity.localClassName}")
             attachTrackerFrameLayout(activity)
         }
 
@@ -209,6 +273,7 @@ class TrackerManager {
                 }
             }
         }
+
         override fun onActivityDestroyed(activity: Activity) {
             detachTrackerFrameLayout(activity)
         }
@@ -220,3 +285,4 @@ class TrackerManager {
         }
     }
 }
+

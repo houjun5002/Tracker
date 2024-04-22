@@ -4,6 +4,7 @@ import android.util.Log
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager.widget.ViewPager
+import com.zsmarter.exposuretracker.constant.GlobalConfig
 import com.zsmarter.exposuretracker.constant.TrackerConstants
 import com.zsmarter.exposuretracker.manager.ExposureManager
 import com.zsmarter.exposuretracker.ui.TrackerFrameLayout
@@ -91,6 +92,7 @@ class ReuseLayoutHook(
 
         override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
             if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                TrackerLog.d("triggerViewCalculate1 ")
                 ExposureManager.get().triggerViewCalculate(TrackerConstants.TRIGGER_VIEW_CHANGED, mRootLayout, mRootLayout.getLastVisibleViewMap());
             }
         }
@@ -108,6 +110,7 @@ class ReuseLayoutHook(
 
         override fun onPageSelected(position: Int) {
             if (state != ViewPager.SCROLL_STATE_SETTLING) {
+                TrackerLog.d("triggerViewCalculate2 ")
                 ExposureManager.get().triggerViewCalculate(
                     TrackerConstants.TRIGGER_VIEW_CHANGED,
                     mRootLayout,
@@ -118,6 +121,7 @@ class ReuseLayoutHook(
 
         override fun onPageScrollStateChanged(state: Int) {
             if (this.state == ViewPager.SCROLL_STATE_SETTLING && state == ViewPager.SCROLL_STATE_IDLE) {
+                //TrackerLog.d("triggerViewCalculate3 =onPageScrollStateChanged==="+mRootLayout.getLastVisibleViewMap().toString())
                 ExposureManager.get().triggerViewCalculate(
                     TrackerConstants.TRIGGER_VIEW_CHANGED,
                     mRootLayout,
