@@ -21,7 +21,6 @@ class CommonActivity : BaseActivity() {
         btn_click_3.setOnClickListener {
             Toast.makeText(this, "点击了${btn_click_3.text}", Toast.LENGTH_SHORT).show()
         }
-
         val exposureData1 = mutableMapOf<String, Any?>()
         exposureData1["谁点的？"] = "我也不知道"
         btn_click.addExposureOrClickTag(getPageCode(),"clickAndShow", exposureData1)

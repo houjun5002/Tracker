@@ -17,7 +17,7 @@ class App: MultiDexApplication() {
 
         TrackerManager.get().initTracker(
             this,
-            trackerOpen = true,
+            trackerOpen = false,
             trackerExposureOpen = true,
             logOpen = true,
             batchOpen = true,
@@ -29,9 +29,7 @@ class App: MultiDexApplication() {
 
                 override fun commitExposureData(exposureData: MutableList<MutableMap<String, Any?>?>) {
                     //曝光数据
-
                     for (data in exposureData) {
-
                         Log.i("commitExposureData", "commitExposureData==${JSON.toJSONString(data)}")
                     }
                 }
