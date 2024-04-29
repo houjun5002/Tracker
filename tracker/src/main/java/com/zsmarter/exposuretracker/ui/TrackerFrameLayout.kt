@@ -190,8 +190,12 @@ class TrackerFrameLayout @JvmOverloads constructor(
      * @param hasFocus
      */
     override fun dispatchWindowFocusChanged(hasFocus: Boolean) {
-        TrackerLog.e("TrackerFrameLayout dispatchWindowFocusChanged triggerViewCalculate begin==")
-        val ts = System.currentTimeMillis()
+        TrackerLog.d("TrackerFrameLayout dispatchWindowFocusChanged")
+        if(hasFocus){
+            TrackerLog.d("TrackerFrameLayout  lastVisibleViewMap.clear()")//获取到页面则清空原始
+            lastVisibleViewMap.clear()
+        }
+        //val ts = System.currentTimeMillis()
         ExposureManager.get().triggerViewCalculate(
             TrackerConstants.TRIGGER_WINDOW_CHANGED,
             this,
@@ -203,9 +207,9 @@ class TrackerFrameLayout @JvmOverloads constructor(
 
     override fun dispatchVisibilityChanged(changedView: View, visibility: Int) {
         // Scene 6: switch page in the TabActivity
-        TrackerLog.e("TrackerFrameLayout dispatchVisibilityChanged triggerViewCalculate begin")
+        TrackerLog.e("TrackerFrameLayout dispatchVisibilityChanged triggerViewCalculate begin$VISIBLE")
         if (visibility == View.GONE) {
-            val ts = System.currentTimeMillis()
+            //val ts = System.currentTimeMillis()
             ExposureManager.get().triggerViewCalculate(
                 TrackerConstants.TRIGGER_WINDOW_CHANGED,
                 this,

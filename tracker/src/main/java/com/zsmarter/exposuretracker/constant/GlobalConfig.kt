@@ -34,12 +34,12 @@ object GlobalConfig {
     /**
      * whether or not to print the log
      */
-    var logOpen = true
+    var logOpen = false
 
     /**
      * whether or not to commit the exposure event log in batch or one by one
      */
-    var batchOpen = false
+    var batchOpen = true
 
     var start = 0L
 

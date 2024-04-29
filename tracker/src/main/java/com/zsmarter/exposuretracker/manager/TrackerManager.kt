@@ -14,6 +14,7 @@ import com.zsmarter.exposuretracker.api.OnCommitListener
 import com.zsmarter.exposuretracker.api.impl.DataCommitImpl
 import com.zsmarter.exposuretracker.constant.GlobalConfig
 import com.zsmarter.exposuretracker.ui.TrackerFrameLayout
+import com.zsmarter.exposuretracker.util.GsonUtils
 import com.zsmarter.exposuretracker.util.TrackerLog
 
 /**
@@ -51,8 +52,8 @@ class TrackerManager {
         this.commitListener = onCommitListener
 
         if (GlobalConfig.trackerOpen || GlobalConfig.trackerExposureOpen) {
-            mActivityLifecycle = ActivityLifecycleForTracker()
-            application.registerActivityLifecycleCallbacks(mActivityLifecycle)
+            /*mActivityLifecycle = ActivityLifecycleForTracker()
+            application.registerActivityLifecycleCallbacks(mActivityLifecycle)*/
         }
     }
 
@@ -221,6 +222,31 @@ class TrackerManager {
         }
     }
 
+    public fun attachTrackerFrameLayoutResume(view: View?) {
+        if (view == null) {
+            return
+        }
+        try {
+            val container = view.findViewById<View>(R.id.content) as ViewGroup
+                ?: return
+            if (container.getChildAt(0) is TrackerFrameLayout) {
+                container.dispatchWindowFocusChanged(true)
+            }
+        } catch (e: Exception) {
+            TrackerLog.e(e.toString())
+        }
+    }
+
+    /**
+     * 页面单次触发
+     */
+    public fun onActivityResume() {
+        if (GlobalConfig.trackerExposureOpen) {
+            attachTrackerFrameLayoutResume(containerView)
+            TrackerLog.d("onActivityResume activity")
+        }
+    }
+
     /**
      * 页面暂停或切换tab按键的时候调用触发结束计算时间
      */
@@ -263,15 +289,16 @@ class TrackerManager {
             attachTrackerFrameLayout(activity)
         }
 
-        override fun onActivityPaused(activity: Activity) {}
-
-        override fun onActivityStopped(activity: Activity) {
+        override fun onActivityPaused(activity: Activity) {
             if (GlobalConfig.trackerExposureOpen) {
                 TrackerLog.d("onActivityStopped activity $activity")
                 if (GlobalConfig.batchOpen) {
                     batchReport()
                 }
             }
+        }
+
+        override fun onActivityStopped(activity: Activity) {
         }
 
         override fun onActivityDestroyed(activity: Activity) {

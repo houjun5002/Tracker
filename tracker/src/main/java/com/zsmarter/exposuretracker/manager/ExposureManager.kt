@@ -14,6 +14,7 @@ import com.zsmarter.exposuretracker.model.ExposureModel
 import com.zsmarter.exposuretracker.model.ReuseLayoutHook
 import com.zsmarter.exposuretracker.util.CommonHelper
 import com.zsmarter.exposuretracker.util.DataProcess
+import com.zsmarter.exposuretracker.util.GsonUtils
 import com.zsmarter.exposuretracker.util.TrackerLog
 import com.zsmarter.exposuretracker.util.TrackerUtil
 import java.lang.IllegalArgumentException
@@ -106,7 +107,7 @@ class ExposureManager {
                 indexMap["exposureIndex"] = index + 1
             }
             addParamsToHashMap(model,model.params,duration)
-            model.params?.put("startTime",model.tag)
+            model.params?.put("startTime",model.beginTime)
             model.params?.put("durationTime",duration)
             DataProcess.commitExposureParams(
                 model.params,
@@ -213,17 +214,17 @@ class ExposureManager {
         val checkWindowFocus = checkWindowFocus(view)  //检查视图是否拥有焦点,同时检查isShow
 
         val exposureValid = checkExposureViewDimension(view) //是否可见getGlobalVisibleRect
-        TrackerLog.d(view.toString()+"是否可见===$checkWindowFocus======exposureValid=是否有效可见===$exposureValid")
         val needExposureProcess = checkWindowFocus && exposureValid
         if (!needExposureProcess) {
             return
         }
+        TrackerLog.d(view.toString()+"可见===")
 
         if (viewTag.isNullOrBlank()) {
             throw IllegalArgumentException("没有有给曝光的view设置->VIEW_TAG_UNIQUE_NAME")
         }
         exposureViewProportion = getExposureViewProportion(view)
-        ///需要曝光
+        ///需要曝光,上次list包含则直接添加到current,
         // only add the visible view in screen
         if (lastVisibleViewMap.containsKey(viewTag)) {
             val model = lastVisibleViewMap[viewTag]
@@ -271,7 +272,7 @@ class ExposureManager {
             exposureInner.currentVisibleViewMap[key] = (value!!.clone() as ExposureModel)
         }
         lastVisibleViewMap.clear()
-        lastVisibleViewMap.putAll(currentVisibleViewMap)
+        lastVisibleViewMap.putAll(currentVisibleViewMap)//提交则清空
         ///TrackerLog.d("commitExposure commitExposure+==========="+ (exposureInner.lastVisibleViewMap.isNotEmpty() || exposureInner.currentVisibleViewMap.isNotEmpty()))
         // transfer time-consuming operation to new thread.
         if (exposureInner.lastVisibleViewMap.isNotEmpty() || exposureInner.currentVisibleViewMap.isNotEmpty()) {
