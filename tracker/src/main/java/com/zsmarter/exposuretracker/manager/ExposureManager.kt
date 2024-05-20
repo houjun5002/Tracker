@@ -14,7 +14,6 @@ import com.zsmarter.exposuretracker.model.ExposureModel
 import com.zsmarter.exposuretracker.model.ReuseLayoutHook
 import com.zsmarter.exposuretracker.util.CommonHelper
 import com.zsmarter.exposuretracker.util.DataProcess
-import com.zsmarter.exposuretracker.util.GsonUtils
 import com.zsmarter.exposuretracker.util.TrackerLog
 import com.zsmarter.exposuretracker.util.TrackerUtil
 import java.lang.IllegalArgumentException
@@ -126,7 +125,8 @@ class ExposureManager {
         val positionMap = mutableMapOf<String, Float>()
         positionMap["x"] = motionEvent?.x ?: 0f
         positionMap["y"] = motionEvent?.y ?: 0f
-        TrackerLog.d("getAbsPosition()====${positionMap}")
+        positionMap["rawX"] = motionEvent?.rawX ?: 0f
+        positionMap["rawY"] = motionEvent?.rawY ?: 0f
         return positionMap
     }
 
