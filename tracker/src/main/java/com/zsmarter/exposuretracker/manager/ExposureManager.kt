@@ -214,7 +214,8 @@ class ExposureManager {
         val checkWindowFocus = checkWindowFocus(view)  //检查视图是否拥有焦点,同时检查isShow
 
         val exposureValid = checkExposureViewDimension(view) //是否可见getGlobalVisibleRect
-        val needExposureProcess = checkWindowFocus && exposureValid
+        val rootViewVisible = view.rootView.windowVisibility==View.VISIBLE
+        val needExposureProcess = checkWindowFocus && exposureValid &&rootViewVisible
         if (!needExposureProcess) {
             return
         }
