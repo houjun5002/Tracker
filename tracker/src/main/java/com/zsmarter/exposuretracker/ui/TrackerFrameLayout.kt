@@ -24,7 +24,7 @@ class TrackerFrameLayout @JvmOverloads constructor(
      * Custom threshold is used to determine whether it is a click event,
      * When the user moves more than 20 pixels in screen, it is considered as the scrolling event instead of a click.
      */
-    private val CLICK_LIMIT = 20f
+    private val CLICK_LIMIT = 40f
 
     /**
      * the X Position

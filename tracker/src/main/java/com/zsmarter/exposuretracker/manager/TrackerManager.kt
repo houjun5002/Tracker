@@ -1,6 +1,5 @@
 package com.zsmarter.exposuretracker.manager
 
-import android.R
 import android.app.Activity
 import android.app.Application
 import android.app.Application.ActivityLifecycleCallbacks
@@ -9,12 +8,12 @@ import android.os.Bundle
 import android.os.Handler
 import android.view.View
 import android.view.ViewGroup
+import com.zsmarter.exposuretracker.R
 import com.zsmarter.exposuretracker.api.IDataCommit
 import com.zsmarter.exposuretracker.api.OnCommitListener
 import com.zsmarter.exposuretracker.api.impl.DataCommitImpl
 import com.zsmarter.exposuretracker.constant.GlobalConfig
 import com.zsmarter.exposuretracker.ui.TrackerFrameLayout
-import com.zsmarter.exposuretracker.util.GsonUtils
 import com.zsmarter.exposuretracker.util.TrackerLog
 
 /**
@@ -244,6 +243,7 @@ class TrackerManager {
         if (GlobalConfig.trackerExposureOpen) {
             attachTrackerFrameLayoutResume(containerView)
             TrackerLog.d("onActivityResume activity")
+            GlobalConfig.onViewHasStoped=false
         }
     }
 
@@ -258,6 +258,7 @@ class TrackerManager {
                 batchReport()
             }
             //containerView = null
+            GlobalConfig.onViewHasStoped=true
         }
     }
 

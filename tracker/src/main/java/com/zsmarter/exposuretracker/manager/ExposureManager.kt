@@ -69,11 +69,14 @@ class ExposureManager {
                         }
                     }
                     BATCH_COMMIT_EXPOSURE -> {
-                        // Scene 3 (switch back and forth when press Home button) is excluded.
-                        TrackerUtil.trackExploreData(commitLogs)
-                        TrackerLog.v("onActivityPaused batch commit")
-                        // clear after committed.
-                        commitLogs.clear()
+                        val lock = this.commitLogs
+                        synchronized(lock){
+                            // Scene 3 (switch back and forth when press Home button) is excluded.
+                            TrackerUtil.trackExploreData(commitLogs)
+                            TrackerLog.v("onActivityPaused batch commit")
+                            // clear after committed.
+                            commitLogs.clear()
+                        }
                     }
                     else -> {
                     }
@@ -136,12 +139,16 @@ class ExposureManager {
      * @param view
      * @return
      */
+    @Synchronized
     fun triggerViewCalculate(
         triggerType: Int,
         view: View?,
         lastVisibleViewMap: MutableMap<String, ExposureModel?>
     ) {
         if (!GlobalConfig.trackerExposureOpen) {
+            return
+        }
+        if(GlobalConfig.onViewHasStoped){
             return
         }
         TrackerLog.d("GlobalConfig.trackerExposureOpen=="+GlobalConfig.trackerExposureOpen)
@@ -351,8 +358,6 @@ class ExposureManager {
         val exposeProportion = visibleArea / (width * height)
         return exposeProportion
     }
-
-
 
     companion object {
         /**

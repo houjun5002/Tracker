@@ -57,4 +57,6 @@ object GlobalConfig {
      * for exposure event, 100% by default
      */
     var exposureSampling = 100
+
+    var onViewHasStoped = false
 }
