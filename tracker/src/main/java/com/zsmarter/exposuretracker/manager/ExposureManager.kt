@@ -71,11 +71,11 @@ class ExposureManager {
                     BATCH_COMMIT_EXPOSURE -> {
                         val lock = this.commitLogs
                         synchronized(lock){
-                            // Scene 3 (switch back and forth when press Home button) is excluded.
-                            TrackerUtil.trackExploreData(commitLogs)
-                            TrackerLog.v("onActivityPaused batch commit")
-                            // clear after committed.
-                            commitLogs.clear()
+                        // Scene 3 (switch back and forth when press Home button) is excluded.
+                        TrackerUtil.trackExploreData(commitLogs)
+                        TrackerLog.v("onActivityPaused batch commit")
+                        // clear after committed.
+                        commitLogs.clear()
                         }
                     }
                     else -> {
