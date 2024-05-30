@@ -20,7 +20,7 @@ class App: MultiDexApplication() {
             trackerOpen = false,
             trackerExposureOpen = true,
             logOpen = true,
-            batchOpen = true,
+            batchOpen = true,dimThreshold=0.5,timeThreshold=1000,
             onCommitListener = object : OnCommitListener {
                 override fun commitClickData(clickData: MutableMap<String, Any?>?) {
                     //点击数据

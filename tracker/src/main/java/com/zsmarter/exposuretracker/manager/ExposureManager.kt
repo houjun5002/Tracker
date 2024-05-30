@@ -4,10 +4,7 @@ import android.graphics.Rect
 import android.os.Handler
 import android.os.HandlerThread
 import android.util.ArrayMap
-import android.view.MotionEvent
-import android.view.View
-import android.view.ViewGroup
-import android.view.ViewTreeObserver
+import android.view.*
 import com.zsmarter.exposuretracker.constant.GlobalConfig
 import com.zsmarter.exposuretracker.constant.TrackerConstants
 import com.zsmarter.exposuretracker.model.ExposureModel
@@ -16,9 +13,7 @@ import com.zsmarter.exposuretracker.util.CommonHelper
 import com.zsmarter.exposuretracker.util.DataProcess
 import com.zsmarter.exposuretracker.util.TrackerLog
 import com.zsmarter.exposuretracker.util.TrackerUtil
-import java.lang.IllegalArgumentException
 import java.util.*
-import kotlin.collections.ArrayList
 
 
 class ExposureManager {
@@ -36,6 +31,7 @@ class ExposureManager {
     private var isVisible = false
     private var exposureViewProportion: Float? = null
     var motionEvent: MotionEvent? = null
+    var lock : Any = Object()
 
     init {
         val exposureThread = HandlerThread("ViewTracker_exposure")
@@ -69,7 +65,7 @@ class ExposureManager {
                         }
                     }
                     BATCH_COMMIT_EXPOSURE -> {
-                        val lock = this.commitLogs
+                        //val lock = this.commitLogs
                         synchronized(lock){
                             // Scene 3 (switch back and forth when press Home button) is excluded.
                             TrackerUtil.trackExploreData(commitLogs)
@@ -219,14 +215,15 @@ class ExposureManager {
         }
         val viewTag = view.getTag(TrackerConstants.VIEW_TAG_UNIQUE_NAME) as String?
         val checkWindowFocus = checkWindowFocus(view)  //检查视图是否拥有焦点,同时检查isShow
-
         val exposureValid = checkExposureViewDimension(view) //是否可见getGlobalVisibleRect
         val rootViewVisible = view.rootView.windowVisibility==View.VISIBLE
-        val needExposureProcess = exposureValid &&rootViewVisible
+        val needExposureProcess = checkWindowFocus && exposureValid &&rootViewVisible
+        //TrackerLog.d(view.javaClass.canonicalName+"=="+view.isShown+"view.getParent="+(view.parent as View).visibility+"===exposureValid="+exposureValid+"|"+rootViewVisible)
+
         if (!needExposureProcess) {
             return
         }
-        TrackerLog.d(view.toString()+"可见===")
+        TrackerLog.d(view.javaClass.canonicalName?.toString()+"可见===")
 
         if (viewTag.isNullOrBlank()) {
             throw IllegalArgumentException("没有有给曝光的view设置->VIEW_TAG_UNIQUE_NAME")
@@ -291,8 +288,10 @@ class ExposureManager {
         }
     }
 
+
     private fun checkWindowFocus(view: View): Boolean {
-        if(!view.isShown)return false
+        return view.isShown&& (view.visibility==View.VISIBLE)
+        /*if(!view.isShown)return false
         view.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
             override fun onGlobalLayout() {
                 val visibleRect = Rect()
@@ -302,7 +301,7 @@ class ExposureManager {
                 view.viewTreeObserver.removeOnGlobalLayoutListener(this)
             }
         })
-        return isVisible
+        return isVisible*/
     }
     /**
      * check the visible width and height of the view, compared with the its original width and height.

@@ -169,7 +169,6 @@ class TrackerManager {
         message?.let {
             handler?.sendMessage(message)
         }
-        TrackerLog.v("batch report exposure views ")
     }
 
 
@@ -249,7 +248,7 @@ class TrackerManager {
     }
 
     /**
-     * 页面暂停或切换tab按键的时候调用触发结束计算时间
+     * 页面结束
      */
     public fun onActivityStoped() {
         if (GlobalConfig.trackerExposureOpen) {
@@ -260,6 +259,19 @@ class TrackerManager {
             }
             //containerView = null
             GlobalConfig.onViewHasStoped=true
+        }
+    }
+
+    /**
+     * 页面暂停或切换tab按键的时候调用触发结束计算时间
+     */
+    public fun onActivityPause() {
+        if (GlobalConfig.trackerExposureOpen) {
+            detachTrackerFrameLayout(containerView)
+            TrackerLog.d("onActivityStopped activity")
+            if (GlobalConfig.batchOpen) {
+                batchReport()
+            }
         }
     }
 

@@ -77,11 +77,14 @@ class TrackerFrameLayout @JvmOverloads constructor(
                 // Scene 1: Scroll beginning
                 ExposureManager.get().setAbsPosition(ev)
                 val time = System.currentTimeMillis()
-                ExposureManager.get().triggerViewCalculate(
-                    TrackerConstants.TRIGGER_VIEW_CHANGED,
-                    this,
-                    lastVisibleViewMap
-                )
+                if (time - lastOnLayoutSystemTimeMillis > 1000) {
+                    lastOnLayoutSystemTimeMillis = time
+                    ExposureManager.get().triggerViewCalculate(
+                        TrackerConstants.TRIGGER_VIEW_CHANGED,
+                        this,
+                        lastVisibleViewMap
+                    )
+                }
                 //TrackerLog.v("dispatchTouchEvent triggerViewCalculate =")
             } else {
                 //TrackerLog.d("dispatchTouchEvent ACTION_MOVE but not in click limit")
