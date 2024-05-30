@@ -169,7 +169,7 @@ class TrackerManager {
         message?.let {
             handler?.sendMessage(message)
         }
-        TrackerLog.v("batch report exposure views " + (System.currentTimeMillis() - time) + "ms")
+        TrackerLog.v("batch report exposure views ")
     }
 
 

@@ -2,6 +2,7 @@ package com.zsmarter.exposuretracker.ui
 
 import android.app.Activity
 import android.content.Context
+import android.os.Looper
 import android.util.ArrayMap
 import android.util.AttributeSet
 import android.view.GestureDetector
@@ -201,6 +202,23 @@ class TrackerFrameLayout @JvmOverloads constructor(
             this,
             lastVisibleViewMap
         )
+
+        ///没有触发的手动1秒触发
+        android.os.Handler(Looper.getMainLooper()).postDelayed({
+            ExposureManager.get().triggerViewCalculate(
+                TrackerConstants.TRIGGER_VIEW_CHANGED,
+                this,
+                lastVisibleViewMap
+            )
+        },500)
+        android.os.Handler(Looper.getMainLooper()).postDelayed({
+            ExposureManager.get().triggerViewCalculate(
+                TrackerConstants.TRIGGER_VIEW_CHANGED,
+                this,
+                lastVisibleViewMap
+            )
+        },1000)
+
         super.dispatchWindowFocusChanged(hasFocus)
     }
 
